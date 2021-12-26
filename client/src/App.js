@@ -6,6 +6,7 @@ import { Link, Routes, Route, BrowserRouter as Router } from 'react-router-dom';
 import Register from './Register.js';
 import About from './About.js';
 import Patient from './Patient.js';
+import Record from './Record.js';
 import './App.css';
  
 class App extends Component {
@@ -23,12 +24,16 @@ class App extends Component {
               <li>
                 <Link to="/patient">Patient</Link>
               </li>
+              <li>
+                <Link to="/record">Record</Link>
+              </li>
 
             </ul>
            <Routes>
                  <Route exact path='/register' element={< Register />}></Route>
                  <Route exact path='/about' element={< About />}></Route>
                  <Route exact path='/patient' element={< Patient />}></Route>
+                 <Route exact path='/record' element={< Record />}></Route>
           </Routes>
           </div>
        </Router>

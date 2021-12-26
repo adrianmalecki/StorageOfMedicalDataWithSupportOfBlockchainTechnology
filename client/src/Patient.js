@@ -4,7 +4,7 @@ function Patient (){
     return(
 		<div class="container">
 			<div class="row" id="create_permission"><h3>Give Create Permission</h3></div>
-			<hr>
+			
 			<form class="form-horizontal" id="register_form" >
 				<div class="form-group">
 					<label class="control-label col-sm-2" for="doc_addr">Doctor's Ethereum address</label>
@@ -30,7 +30,6 @@ function Patient (){
 			<div id="postPermit"> </div>
 
 			<div class="row" id="view_permission"><h3>View Records</h3></div>
-			<hr>
 			<form class="form-horizontal" id="view_form" >
 				<div class="form-group">
 					<label class="control-label col-sm-2" for="viewer_addr">Your Ethereum address</label>
@@ -58,6 +57,7 @@ function Patient (){
 					<ul class="list-group">
 					</ul>
 				</div>
+			</div>
 		
 	)
 }
