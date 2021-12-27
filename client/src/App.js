@@ -31,8 +31,11 @@ class App extends Component {
     const user = new web3.eth.Contract(USER_ABI, USER_ADDRESS);
     this.setState({user})
     
-    const isUser = await user.methods.usersAdd(0).call();
-    this.setState({isUser})
+    const patient = await user.methods.usersmapping('0xd03f5534DFFe653C46F74973013910683AbF0217').call();
+    this.setState({
+        patient
+    })
+    console.log(patient)
   }
 
   constructor(props) {
@@ -55,9 +58,6 @@ class App extends Component {
                 <Link to="/register">Register</Link>
               </li>
               <li>
-                <Link to="/about">About Us</Link>
-              </li>
-              <li>
                 <Link to="/patient">Patient</Link>
               </li>
               <li>
@@ -67,7 +67,6 @@ class App extends Component {
             </ul>
            <Routes>
                  <Route exact path='/register' element={< Register />}></Route>
-                 <Route exact path='/about' element={< About />}></Route>
                  <Route exact path='/patient' element={< Patient />}></Route>
                  <Route exact path='/record' element={< Record />}></Route>
           </Routes>
