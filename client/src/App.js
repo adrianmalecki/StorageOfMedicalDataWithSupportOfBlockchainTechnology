@@ -8,6 +8,7 @@ import Register from './Register.js';
 import About from './About.js';
 import Patient from './Patient.js';
 import Record from './Record.js';
+import MetamaskConnection from './MetamaskConnection.js';
 import './App.css';
 
 
@@ -55,8 +56,8 @@ class App extends Component {
   render() {
     return (
        <Router>
-           <div className="App">
-             {this.state.account}
+          <div className="App">
+          <MetamaskConnection />
              
             <ul className="App-header">
               <li>
