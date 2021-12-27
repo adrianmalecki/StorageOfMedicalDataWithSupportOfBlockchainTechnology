@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import SimpleStorageContract from "./contracts/SimpleStorage.json";
+import SimpleStorageContract from "./contracts/User.json";
 import getWeb3 from "./getWeb3";
 import Web3 from "web3";
 import { Link, Routes, Route, BrowserRouter as Router } from 'react-router-dom';
@@ -12,55 +12,46 @@ import MetamaskConnection from './MetamaskConnection.js';
 import './App.css';
 
 
+import {USER_ADDRESS, USER_ABI} from './config';
+
  
 class App extends Component {
 
-  async componentWillMount() {
-    // Detect Metamask
-    const metamaskInstalled = typeof window.web3 !== 'undefined'
-    this.setState({ metamaskInstalled })
-    if(metamaskInstalled) {
-      await this.loadWeb3()
-      await this.loadBlockchainData()
-    }
+  componentWillMount(){
+    this.loadBlockchainData();
   }
 
 
-  async loadWeb3() {
-    if (window.ethereum) {
-      window.web3 = new Web3(window.ethereum)
-      await window.ethereum.enable()
-    }
-    else if (window.web3) {
-      window.web3 = new Web3(window.web3.currentProvider)
-    }
-    else {
-    }
-  }
-
-  async loadBlockchainData() {
-    const web3 = window.web3
+  async loadBlockchainData(){
+    const web3 = new Web3(Web3.givenProvider || "http://localhost:7545") 
+    const network = await web3.eth.net.getNetworkType()
     const accounts = await web3.eth.getAccounts()
-    this.setState({ account: accounts[0] })
-    const networkId = await web3.eth.net.getId()
+    this.setState({account: accounts[0]})
+
+    const user = new web3.eth.Contract(USER_ABI, USER_ADDRESS);
+    this.setState({user})
+    
+    const isUser = await user.methods.usersAdd(0).call();
+    this.setState({isUser})
   }
 
   constructor(props) {
     super(props)
     this.state = {
       account: '',
+      isUser: ''
     }
   }
 
 
   render() {
     return (
-       <Router>
-          <div className="App">
-          <MetamaskConnection />
-             
-            <ul className="App-header">
-              <li>
+      <Router>
+        <div className="App">
+          <MetamaskConnection /> 
+          <p> ii: {this.state.isUser}</p>
+          <ul className="App-header">
+            <li>
                 <Link to="/register">Register</Link>
               </li>
               <li>
