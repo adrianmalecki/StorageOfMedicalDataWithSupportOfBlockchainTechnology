@@ -1,4 +1,4 @@
-import React, { Component, useState} from "react";
+import React, { Component } from "react";
 import SimpleStorageContract from "./contracts/User.json";
 import getWeb3 from "./getWeb3";
 import Web3 from "web3";
@@ -8,7 +8,6 @@ import Register from './Register.js';
 import About from './About.js';
 import Patient from './Patient.js';
 import Record from './Record.js';
-import { ethers } from 'ethers';
 import MetamaskConnection from './MetamaskConnection.js';
 import './App.css';
 
@@ -18,31 +17,29 @@ import {USER_ADDRESS, USER_ABI} from './config';
  
 class App extends Component {
 
-  connect = async () =>{
-    try{
-      if (!window.ethereum)
-        throw new Error('Install metamask first');
-      await window.ethereum.request({method: "eth_requestAccounts"})
-        .then(result => {this.setState({account: result[0]})});
-
-    }catch (err){
-      console.log('error')
+  async componentWillMount() {
+    // Detect Metamask
+    const metamaskInstalled = typeof window.web3 !== 'undefined'
+    this.setState({ metamaskInstalled })
+    if(metamaskInstalled) {
+      await this.loadWeb3()
+      await this.loadBlockchainData()
     }
   }
 
   async loadWeb3() {
     if (window.ethereum) {
-          window.ethereum.request({method: 'eth_requestAccounts'})
-          .then(result => {
-            this.setState({account: result[0]});
-            console.log(result[0])
-            console.log('erf')
-          })
-        }else {
-          console.log('err')
-        }
+      window.web3 = new Web3(window.ethereum)
+      await window.ethereum.enable()
+    }
+    else if (window.web3) {
+      window.web3 = new Web3(window.web3.currentProvider)
+    }
+    else {
+      // DO NOTHING...
+    }
   }
-  
+
 
   async loadBlockchainData(){
     const web3 = new Web3(Web3.givenProvider || "http://localhost:7545") 
@@ -50,39 +47,38 @@ class App extends Component {
     const accounts = await web3.eth.getAccounts()
     this.setState({account: accounts[0]})
 
-    const user = new web3.eth.Contract(USER_ABI, USER_ADDRESS);
-    this.setState({user})
+    const userContract = new web3.eth.Contract(USER_ABI, USER_ADDRESS);
+    this.setState({userContract})
+    const isUser = await userContract.methods.isUser(this.state.account).call();
+    console.log(isUser)
+
     
-    const isUser = await user.methods.isUser(this.state.account).call();
+    const patient = await userContract.methods.usersmapping(this.state.account).call();
     this.setState({
-        isUser
+        patient
     })
-    console.log(isUser);
+    console.log(patient)
   }
 
   constructor(props) {
     super(props)
     this.state = {
       account: '',
-      isUser: false,
-      user: ''
+      isUser: '',
     }
-  }
 
+
+  }
 
 
   render() {
 
-    /*function isRegistered(accountaddress){
-      if(this.state.isUser === true)
-        //<Dashboard/ >
-        return <div>rgvb</div>
-      else
-        ///<Register/ >
-
-        return <div>eee</div>
-
-    }*/
+    let content
+    if(this.state.isUser) {
+      content = <div>eee</div>
+    } else {
+      content = <div><Register/ ></div>
+    }
 
     return (
       <Router>
@@ -92,10 +88,11 @@ class App extends Component {
             <button onClick={this.connect}>Connect wallet</button>
             <div className='accountDisplay'>
               <h2>Address: {this.state.account}</h2>
-              </div>
-              
             </div>
-          <p> ii: </p>
+          </div>
+          <div>{content}</div>
+
+
           <ul className="App-header">
             <li>
                 <Link to="/register">Register</Link>
