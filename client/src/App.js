@@ -17,7 +17,7 @@ import {USER_ADDRESS, USER_ABI} from './config';
  
 class App extends Component {
 
-  async componentWillMount() {
+  connect = async() => {
     // Detect Metamask
     const metamaskInstalled = typeof window.web3 !== 'undefined'
     this.setState({ metamaskInstalled })
