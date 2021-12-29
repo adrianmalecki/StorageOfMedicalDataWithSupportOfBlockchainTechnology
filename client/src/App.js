@@ -8,7 +8,6 @@ import Register from './Register.js';
 import About from './About.js';
 import Patient from './Patient.js';
 import Record from './Record.js';
-import MetamaskConnection from './MetamaskConnection.js';
 import './App.css';
 
 
@@ -54,30 +53,39 @@ class App extends Component {
 
     
     const patient = await userContract.methods.usersmapping(this.state.account).call();
-    this.setState({
-        patient
-    })
-    console.log(patient)
+    this.setState({ patient })
+    console.log({patient})
   }
 
   constructor(props) {
     super(props)
     this.state = {
       account: '',
-      isUser: '',
+      isUser: false,
+      patient: []
     }
 
+    this.addUser=this.addUser.bind(this)
+  }
 
+  addUser(firstname, lastname, pesel){
+    this.state.patient.methods.addUser(this.state.account, firstname, lastname, pesel).send({ from: this.state.account })  
+    //.once()
   }
 
 
   render() {
 
     let content
-    if(this.state.isUser) {
-      content = <div>eee</div>
+    if(!this.state.isUser) {
+      content = 
+        <div>
+          <h2>First name: {this.state.patient[0]}</h2>
+          <h2>Last name: {this.state.patient[1]}</h2>
+          <h2>PESEL: {this.state.patient[2]}</h2>
+        </div>
     } else {
-      content = <div><Register/ ></div>
+      content = <div>Register addUser=this.addUser /></div>
     }
 
     return (
