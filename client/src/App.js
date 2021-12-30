@@ -85,7 +85,7 @@ class App extends Component {
           <h2>PESEL: {this.state.patient[2]}</h2>
         </div>
     } else {
-      content = <div>Register addUser=this.addUser /></div>
+      content = <div><Register addUser={this.addUser} /></div>
     }
 
     return (
@@ -114,7 +114,7 @@ class App extends Component {
 
             </ul>
            <Routes>
-                 <Route exact path='/register' element={< Register />}></Route>
+                 <Route exact path='/register' element={< Register addUser={this.addUser}/>}></Route>
                  <Route exact path='/patient' element={< Patient />}></Route>
                  <Route exact path='/record' element={< Record />}></Route>
           </Routes>
