@@ -17,7 +17,6 @@ import {USER_ADDRESS, USER_ABI} from './config';
 class App extends Component {
 
   connect = async() => {
-    // Detect Metamask
     const metamaskInstalled = typeof window.web3 !== 'undefined'
     this.setState({ metamaskInstalled })
     if(metamaskInstalled) {
@@ -35,7 +34,6 @@ class App extends Component {
       window.web3 = new Web3(window.web3.currentProvider)
     }
     else {
-      // DO NOTHING...
     }
   }
 
@@ -62,16 +60,17 @@ class App extends Component {
     this.state = {
       account: '',
       isUser: false,
-      patient: []
+      patient: [],
+      test: ''
     }
 
     this.addUser=this.addUser.bind(this)
   }
 
   addUser(firstname, lastname, pesel){
-    this.state.patient.methods.addUser(this.state.account, firstname, lastname, pesel).send({ from: this.state.account })  
-    //.once()
+    this.state.userContract.methods.addUser(this.state.account, firstname, lastname, pesel).send({ from: this.state.account })  
   }
+
 
 
   render() {
