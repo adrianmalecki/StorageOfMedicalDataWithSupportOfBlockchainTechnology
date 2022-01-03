@@ -1,11 +1,9 @@
 import React, { Component } from "react";
 import SimpleStorageContract from "./contracts/User.json";
-import getWeb3 from "./getWeb3";
 import Web3 from "web3";
 import { Link, Routes, Route, BrowserRouter as Router } from 'react-router-dom';
 
 import Register from './Register.js';
-import About from './About.js';
 import Patient from './Patient.js';
 import Record from './Record.js';
 import './App.css';
