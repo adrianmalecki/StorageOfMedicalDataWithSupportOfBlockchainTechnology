@@ -49,7 +49,7 @@ contract SmartContract {
 	    address uploader;
 	}
 	
-	uint fileCounter = 0;    
+	uint public fileCounter = 0;    
 	mapping (uint => File) public filemapping;
 	
 
@@ -57,8 +57,8 @@ contract SmartContract {
 		require (bytes(_hash).length > 0);
 		require (bytes(_name).length > 0);
 		require (bytes(_description).length > 0);
-		require(msg.sender!=address(0));
-		require(_owner!=address(0));
+		require (msg.sender!=address(0));
+		require (_owner!=address(0));
 		fileCounter = fileCounter + 1;
 		filemapping[fileCounter] = File(fileCounter, _hash, _name, _description, block.timestamp, _owner, msg.sender);
 		emit recordAdded(fileCounter, _hash, _name, _description, block.timestamp, _owner, msg.sender);

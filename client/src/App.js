@@ -9,6 +9,7 @@ import Record from './Record.js';
 import Dashboard from './Dashboard.js';
 import './App.css';
 
+
  
 class App extends Component {
 
@@ -51,6 +52,17 @@ class App extends Component {
         const patient = await smartContract.methods.patientmapping(this.state.account).call();
         this.setState({patient})
       }
+      const fileCounter = await smartContract.methods.fileCounter().call();
+      this.setState({fileCounter})
+      console.log(fileCounter)
+
+      for (var i = fileCounter; i >= 1; i--){
+        const file = await smartContract.methods.filemapping(i).call()
+        this.setState({
+          filemapping: [...this.state.filemapping, file]
+        })
+      }
+
       console.log('totu')
 
     }else{
@@ -64,7 +76,8 @@ class App extends Component {
       account: '',
       smartContract: null,
       isPatient: false,
-      patient: []
+      patient: [],
+      filemapping: []
     }
 
     this.addUser=this.addUser.bind(this)
@@ -84,7 +97,7 @@ class App extends Component {
     if(this.state.isPatient) {
       content = <div><Dashboard account={this.state.account} patient = {this.state.patient} / ></div>
     } else {
-      content = <div><Register addUser={this.addUser} /></div>
+      content = <div><Register addUser={this.addUser} / ></div>
     }
 
     return (
