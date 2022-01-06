@@ -1,5 +1,5 @@
-var User = artifacts.require("./User.sol");
+var SmartContract = artifacts.require("./SmartContract.sol");
 
 module.exports = function(deployer) {
-  deployer.deploy(User);
+  deployer.deploy(SmartContract);
 };

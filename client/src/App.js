@@ -1,15 +1,13 @@
 import React, { Component } from "react";
-import SimpleStorageContract from "./contracts/User.json";
+import SmartContract from "./build/contracts/SmartContract.json";
 import Web3 from "web3";
 import { Link, Routes, Route, BrowserRouter as Router } from 'react-router-dom';
 
 import Register from './Register.js';
 import Patient from './Patient.js';
 import Record from './Record.js';
+import Dashboard from './Dashboard.js';
 import './App.css';
-
-
-import {USER_ADDRESS, USER_ABI} from './config';
 
  
 class App extends Component {
@@ -32,55 +30,59 @@ class App extends Component {
       window.web3 = new Web3(window.web3.currentProvider)
     }
     else {
+      window.alert('Install Metamask first')
     }
   }
 
 
   async loadBlockchainData(){
-    const web3 = new Web3(Web3.givenProvider || "http://localhost:7545") 
-    const network = await web3.eth.net.getNetworkType()
+    const web3 = window.web3
     const accounts = await web3.eth.getAccounts()
-    this.setState({account: accounts[0]})
+    this.setState({ account: accounts[0] })
+    const networkId = await web3.eth.net.getId()
+    const networkData = SmartContract.networks[networkId]
+    if(networkData){
+      const smartContract = new web3.eth.Contract(SmartContract.abi, networkData.address)
+      this.setState({ smartContract })
+      const isPatient = await smartContract.methods.isPatient(this.state.account).call()
+      this.setState({isPatient})
+      console.log(isPatient)
+      if(isPatient){
+        const patient = await smartContract.methods.patientmapping(this.state.account).call();
+        this.setState({patient})
+      }
+      console.log('totu')
 
-    const userContract = new web3.eth.Contract(USER_ABI, USER_ADDRESS);
-    this.setState({userContract})
-    const isUser = await userContract.methods.isUser(this.state.account).call();
-    console.log(isUser)
-
-    
-    const patient = await userContract.methods.usersmapping(this.state.account).call();
-    this.setState({ patient })
-    console.log({patient})
+    }else{
+      window.alert('Change network to: ', { networkData })    
+    }
   }
 
   constructor(props) {
     super(props)
     this.state = {
       account: '',
-      isUser: false,
-      patient: [],
-      test: ''
+      smartContract: null,
+      isPatient: false,
+      patient: []
     }
 
     this.addUser=this.addUser.bind(this)
   }
 
-  addUser(firstname, lastname, pesel){
-    this.state.userContract.methods.addUser(this.state.account, firstname, lastname, pesel).send({ from: this.state.account })  
+  addUser(firstname, lastname, pubKey){
+    this.state.smartContract.methods.addPatient(this.state.account, firstname, lastname, pubKey).send({ from: this.state.account });
   }
 
+  captureFile = event=> {}
 
+  addFile = event=> {}
 
   render() {
 
     let content
-    if(!this.state.isUser) {
-      content = 
-        <div>
-          <h2>First name: {this.state.patient[0]}</h2>
-          <h2>Last name: {this.state.patient[1]}</h2>
-          <h2>PESEL: {this.state.patient[2]}</h2>
-        </div>
+    if(this.state.isPatient) {
+      content = <div><Dashboard account={this.state.account} patient = {this.state.patient} / ></div>
     } else {
       content = <div><Register addUser={this.addUser} /></div>
     }
@@ -91,12 +93,10 @@ class App extends Component {
           <div className='metamaskConnection'>
             <h2>Connect your wallet</h2>
             <button onClick={this.connect}>Connect wallet</button>
-            <div className='accountDisplay'>
-              <h2>Address: {this.state.account}</h2>
-            </div>
+            <h2>Address: {this.state.account}</h2>
+            { content }
           </div>
-          <div>{content}</div>
-
+          
 
           <ul className="App-header">
             <li>
@@ -108,12 +108,16 @@ class App extends Component {
               <li>
                 <Link to="/record">Record</Link>
               </li>
+              <li>
+                <Link to="/dashboard">Dashboard</Link>
+              </li>
 
             </ul>
            <Routes>
                  <Route exact path='/register' element={< Register addUser={this.addUser}/>}></Route>
                  <Route exact path='/patient' element={< Patient />}></Route>
                  <Route exact path='/record' element={< Record />}></Route>
+                 <Route exact path='/dashboard' element={< Dashboard /> }></Route>
           </Routes>
           </div>
        </Router>

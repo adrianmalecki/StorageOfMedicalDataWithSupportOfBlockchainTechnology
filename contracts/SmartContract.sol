@@ -3,26 +3,40 @@ pragma solidity ^0.8.3;
 
 contract SmartContract {
 	mapping (address => bool) public isPatient;
-    event patientAdded(address patientaddress, string firstname, string lastname, string pesel);
-    event recordAdded(uint fileCounter, string hash, string name, string description, uint time, address owner, address uploader);
+
+    event patientAdded(
+    	address patientaddress,
+    	string firstname,
+    	string lastname,
+    	string pubKey
+    );
+    event recordAdded(
+    	uint fileCounter, 
+    	string hash, 
+    	string name,
+    	string description,
+    	uint time,
+    	address owner,
+    	address uploader
+    );
 
 	struct Patient {
 	    string firstname;
 	    string lastname;
-	    string pesel;
+	    string pubKey;
 	}
 	    
 	mapping (address => Patient) public patientmapping;
 	address[] public patientAdd;
 
-	function addUser(address _patientaddress, string memory _firstname, string memory _lastname, string memory _pubKey, bytes memory _sign) public {
+	function addPatient(address _patientaddress, string memory _firstname, string memory _lastname, string memory _pubKey) public {
 	    isPatient[_patientaddress] = true;
 	    patientmapping[_patientaddress].firstname = _firstname;
 	    patientmapping[_patientaddress].lastname = _lastname;
 	    patientmapping[_patientaddress].pubKey = _pubKey;
 	    patientAdd.push(_patientaddress);
 	            
-	    emit userAdded(_patientaddress, _firstname, _lastname, _pubKey);
+	    emit patientAdded(_patientaddress, _firstname, _lastname, _pubKey);
 	}
 
 	struct File {
@@ -32,31 +46,22 @@ contract SmartContract {
 	    string description;
 	    uint date;
 	    address owner;
-	    address payable uploader;
-	    bytes doctorSign;
+	    address uploader;
 	}
 	
 	uint fileCounter = 0;    
 	mapping (uint => File) public filemapping;
-	address[] public fileAdd;
-
 	
 
-	function addRecord(string memory _hash, string memory _name, string memory _description, address _owner, bytes memory _sign) public {
+	function addRecord(string memory _hash, string memory _name, string memory _description, address _owner) public {
 		require (bytes(_hash).length > 0);
 		require (bytes(_name).length > 0);
 		require (bytes(_description).length > 0);
 		require(msg.sender!=address(0));
 		require(_owner!=address(0));
 		fileCounter = fileCounter + 1;
-		filesmapping[fileCounter] = File(fileCounter, _hash, _name, _description, now, _owner, msg.sender, _sign);
-		emit recordAdded(fileCounter, _hash, _name, _description, now, _owner, msg.sender, _sign);
+		filemapping[fileCounter] = File(fileCounter, _hash, _name, _description, block.timestamp, _owner, msg.sender);
+		emit recordAdded(fileCounter, _hash, _name, _description, block.timestamp, _owner, msg.sender);
 		
 	}
-	
-	function share(){
-
-	}
-
-
 }

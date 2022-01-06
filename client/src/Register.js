@@ -7,7 +7,7 @@ class Register extends Component{
 				<h2>Create new account</h2>
 				<form onSubmit={(event) => {
 					event.preventDefault()
-					this.props.addUser(this.fn.value, this.ln.value, this.pesel.value)
+					this.props.addUser(this.fn.value, this.ln.value, this.pubKey.value)
 					console.log('submit')
 				}}>
 
@@ -26,13 +26,11 @@ class Register extends Component{
 					</div>
 
 					<div className="form-group">
-						<label className="control-label col-sm-2" for="reg_addr">PESEL</label>
+						<label className="control-label col-sm-2" for="reg_addr">Public key</label>
 						<div className="col-sm-6">
-							<input id="pesel" ref={(input3) => { this.pesel = input3 }}  type="text" className="form-control" placeholder="Enter your PESEL" name="pesel"></input>
+							<input id="pesel" ref={(input3) => { this.pubKey = input3 }}  type="text" className="form-control" placeholder="Enter your public key" name="pk"></input>
 						</div>
 					</div>	
-
-					
 
 					<div className="form-group">        
 						<div className="col-sm-offset-2 col-sm-10">
