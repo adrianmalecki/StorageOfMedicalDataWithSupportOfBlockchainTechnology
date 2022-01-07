@@ -9,7 +9,8 @@ import Record from './Record.js';
 import Dashboard from './Dashboard.js';
 import './App.css';
 
-
+/*const ipfsClient = require('ipfs-http-client')
+const ipfs = ipfsClient({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' })*/
  
 class App extends Component {
 
@@ -79,17 +80,17 @@ class App extends Component {
       patient: [],
       filemapping: []
     }
-
-    this.addUser=this.addUser.bind(this)
+    this.captureFile = this.captureFile.bind(this)
+    this.uploadFile = this.uploadFile.bind(this)
+    this.addUser = this.addUser.bind(this)
   }
 
   addUser(firstname, lastname, pubKey){
     this.state.smartContract.methods.addPatient(this.state.account, firstname, lastname, pubKey).send({ from: this.state.account });
   }
 
-  captureFile = event=> {}
-
-  addFile = event=> {}
+  captureFile(){console.log('description')}
+  uploadFile(description){console.log(description)}
 
   render() {
 
@@ -124,12 +125,15 @@ class App extends Component {
               <li>
                 <Link to="/dashboard">Dashboard</Link>
               </li>
+              <li>
+                <Link to="/record">Record</Link>
+              </li>
 
             </ul>
            <Routes>
                  <Route exact path='/register' element={< Register addUser={this.addUser}/>}></Route>
                  <Route exact path='/patient' element={< Patient />}></Route>
-                 <Route exact path='/record' element={< Record />}></Route>
+                 <Route exact path='/record' element={< Record uploadFile={this.uploadFile}/>}></Route>
                  <Route exact path='/dashboard' element={< Dashboard /> }></Route>
           </Routes>
           </div>
