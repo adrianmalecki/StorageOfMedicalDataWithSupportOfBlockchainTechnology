@@ -106,18 +106,17 @@ class App extends Component {
     }
   }
 
-  uploadFile = async description => {
+  uploadFile = async (owner, filename, description) => {
     console.log("Submitting file to IPFS...")
     console.log(ipfs)
-    // Add file to the IPFS
-   /* try{
-      console.log('iamin')
-      await ipfs.add(this.state.buffer, (error, result) => { console.log('res: ', result[0].hash) });
+    try{
+      const added = await ipfs.add(this.state.buffer)
+      console.log(added.path, owner, filename, description);
     }catch(error){
       console.log(error)
-    }*/
-    const added = await ipfs.add(this.state.buffer)
-    console.log(added)
+    }
+    
+    //this.state.smartContract.methods.addRecord(added[0].hash, filename, description, owner)
     
     console.log('ef')
   }
