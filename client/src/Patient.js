@@ -1,6 +1,6 @@
 import React from 'react';
  
-function Patient (){
+/*class Patinet extends Component{
     return(
 		<div class="container">
 			<div class="row" id="create_permission"><h3>Give Create Permission</h3></div>
@@ -61,4 +61,4 @@ function Patient (){
 		
 	)
 }
-export default Patient;
+export default Patient;*/

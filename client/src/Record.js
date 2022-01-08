@@ -19,8 +19,8 @@ class Record extends Component{
               </div>
             </div>
           
-            <div className="card mb-3 mx-auto bg-dark" style = {{ maxWidth: '512px'}}>
-              <h2 className="text-white bg-dark"><b><ins>Share file</ins></b></h2>
+            <div className="card mb-3 mx-auto bg-dark">
+              <h2 className="text-white bg-dark">Share file</h2>
                 <form onSubmit={(event) => {
                   event.preventDefault()
                   this.props.uploadFile(this.description.value)
@@ -28,8 +28,8 @@ class Record extends Component{
                   <div className="form-group">
                     <input id="description" ref={(input4) => {this.description = input4}} type="text" className="form control" placeholder="upload file"></input>
                   </div>
-
-                <button type="submit" className="btn-primary btn-block"><b>Submit</b></button>
+                  <input type="file" onChange={this.props.captureFile} ></input>
+                  <button type="submit" className="btn-primary btn-block">Submit</button>
               </form> 
               
        

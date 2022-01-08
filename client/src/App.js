@@ -4,13 +4,13 @@ import Web3 from "web3";
 import { Link, Routes, Route, BrowserRouter as Router } from 'react-router-dom';
 
 import Register from './Register.js';
-import Patient from './Patient.js';
 import Record from './Record.js';
 import Dashboard from './Dashboard.js';
 import './App.css';
 
-/*const ipfsClient = require('ipfs-http-client')
-const ipfs = ipfsClient({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' })*/
+import { create } from "ipfs-http-client";
+const ipfs = create('https://ipfs.infura.io:5001/api/v0');
+
  
 class App extends Component {
 
@@ -43,12 +43,14 @@ class App extends Component {
     this.setState({ account: accounts[0] })
     const networkId = await web3.eth.net.getId()
     const networkData = SmartContract.networks[networkId]
+
     if(networkData){
       const smartContract = new web3.eth.Contract(SmartContract.abi, networkData.address)
       this.setState({ smartContract })
       const isPatient = await smartContract.methods.isPatient(this.state.account).call()
       this.setState({isPatient})
       console.log(isPatient)
+
       if(isPatient){
         const patient = await smartContract.methods.patientmapping(this.state.account).call();
         this.setState({patient})
@@ -89,8 +91,36 @@ class App extends Component {
     this.state.smartContract.methods.addPatient(this.state.account, firstname, lastname, pubKey).send({ from: this.state.account });
   }
 
-  captureFile(){console.log('description')}
-  uploadFile(description){console.log(description)}
+  captureFile = event => {
+    event.preventDefault()
+
+    const file = event.target.files[0]
+    const reader = new window.FileReader()
+
+    reader.readAsArrayBuffer(file)
+    reader.onloadend = () => {
+      this.setState({
+        buffer: Buffer(reader.result),
+      })
+      console.log('buffer', this.state.buffer)
+    }
+  }
+
+  uploadFile = async description => {
+    console.log("Submitting file to IPFS...")
+    console.log(ipfs)
+    // Add file to the IPFS
+   /* try{
+      console.log('iamin')
+      await ipfs.add(this.state.buffer, (error, result) => { console.log('res: ', result[0].hash) });
+    }catch(error){
+      console.log(error)
+    }*/
+    const added = await ipfs.add(this.state.buffer)
+    console.log(added)
+    
+    console.log('ef')
+  }
 
   render() {
 
@@ -117,9 +147,6 @@ class App extends Component {
                 <Link to="/register">Register</Link>
               </li>
               <li>
-                <Link to="/patient">Patient</Link>
-              </li>
-              <li>
                 <Link to="/record">Record</Link>
               </li>
               <li>
@@ -132,8 +159,7 @@ class App extends Component {
             </ul>
            <Routes>
                  <Route exact path='/register' element={< Register addUser={this.addUser}/>}></Route>
-                 <Route exact path='/patient' element={< Patient />}></Route>
-                 <Route exact path='/record' element={< Record uploadFile={this.uploadFile}/>}></Route>
+                 <Route exact path='/record' element={< Record uploadFile={this.uploadFile} captureFile={this.captureFile} />}></Route>
                  <Route exact path='/dashboard' element={< Dashboard /> }></Route>
           </Routes>
           </div>
