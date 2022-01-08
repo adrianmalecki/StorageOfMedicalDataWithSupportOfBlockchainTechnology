@@ -111,14 +111,11 @@ class App extends Component {
     console.log(ipfs)
     try{
       const added = await ipfs.add(this.state.buffer)
-      console.log(added.path, owner, filename, description);
+      await this.state.smartContract.methods.addRecord(added.path, filename, description, owner).send({ from: this.state.account });
+      console.log("Added: ", added)
     }catch(error){
       console.log(error)
     }
-    
-    //this.state.smartContract.methods.addRecord(added[0].hash, filename, description, owner)
-    
-    console.log('ef')
   }
 
   render() {
