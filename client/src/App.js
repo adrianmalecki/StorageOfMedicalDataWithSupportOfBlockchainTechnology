@@ -122,7 +122,7 @@ class App extends Component {
 
     let content
     if(this.state.isPatient) {
-      content = <div><Dashboard account={this.state.account} patient = {this.state.patient} / ></div>
+      content = <div><Dashboard account={this.state.account} patient = {this.state.patient} filemapping = {this.state.filemapping}/ ></div>
     } else {
       content = <div><Register addUser={this.addUser} / ></div>
     }
@@ -156,7 +156,7 @@ class App extends Component {
            <Routes>
                  <Route exact path='/register' element={< Register addUser={this.addUser}/>}></Route>
                  <Route exact path='/record' element={< Record uploadFile={this.uploadFile} captureFile={this.captureFile} />}></Route>
-                 <Route exact path='/dashboard' element={< Dashboard /> }></Route>
+                 <Route exact path='/dashboard' element={< Dashboard filemapping = {this.state.filemapping} /> }></Route>
           </Routes>
           </div>
        </Router>
