@@ -6,6 +6,7 @@ import { Link, Routes, Route, BrowserRouter as Router } from 'react-router-dom';
 import Register from './Register.js';
 import Record from './Record.js';
 import Dashboard from './Dashboard.js';
+import Navbar from './Navbar.js';
 import './App.css';
 
 import { create } from "ipfs-http-client";
@@ -130,10 +131,8 @@ class App extends Component {
     return (
       <Router>
         <div className="App">
+          <div><Navbar account={this.state.account} connect={this.connect}/ ></div>
           <div className='metamaskConnection'>
-            <h2>Connect your wallet</h2>
-            <button onClick={this.connect}>Connect wallet</button>
-            <h2>Address: {this.state.account}</h2>
             { content }
           </div>
           
@@ -141,9 +140,6 @@ class App extends Component {
           <ul className="App-header">
             <li>
                 <Link to="/register">Register</Link>
-              </li>
-              <li>
-                <Link to="/record">Record</Link>
               </li>
               <li>
                 <Link to="/dashboard">Dashboard</Link>
