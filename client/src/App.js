@@ -65,8 +65,8 @@ class App extends Component {
       this.setState({fileCounter})
       console.log(fileCounter)
 
-      for (var i = fileCounter; i >= 1; i--){
-        const file = await smartContract.methods.getPatientFiles(this.state.account, 0).call();
+      for (var i = fileCounter - 1; i >= 0; i--){
+        const file = await smartContract.methods.getPatientFiles(this.state.account, i).call();
         console.log(file);
         console.log(i);
         this.setState({
