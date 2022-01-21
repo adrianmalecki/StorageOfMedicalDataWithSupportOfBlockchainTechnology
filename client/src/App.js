@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import SmartContract from "./build/contracts/SmartContract.json";
 import Web3 from "web3";
 import { Link, Routes, Route, BrowserRouter as Router } from 'react-router-dom';
+import JSEncrypt from 'jsencrypt'; 
 
 import Register from './Register.js';
 import Record from './Record.js';
@@ -56,14 +57,20 @@ class App extends Component {
         const patient = await smartContract.methods.patientmapping(this.state.account).call();
         this.setState({patient})
       }
-      const fileCounter = await smartContract.methods.fileCounter().call();
+      console.log(this.state.patient)
+
+
+
+      const fileCounter = this.state.patient[3];
       this.setState({fileCounter})
       console.log(fileCounter)
 
       for (var i = fileCounter; i >= 1; i--){
-        const file = await smartContract.methods.filemapping(i).call()
+        const file = await smartContract.methods.getPatientFiles(this.state.account, 0).call();
+        console.log(file);
+        console.log(i);
         this.setState({
-          filemapping: [...this.state.filemapping, file]
+          yourfiles: [...this.state.yourfiles, file]
         })
       }
 
@@ -81,7 +88,8 @@ class App extends Component {
       smartContract: null,
       isPatient: false,
       patient: [],
-      filemapping: []
+      yourfiles: [],
+      content: null
     }
     this.captureFile = this.captureFile.bind(this)
     this.uploadFile = this.uploadFile.bind(this)
@@ -108,9 +116,18 @@ class App extends Component {
   }
 
   uploadFile = async (owner, filename, description) => {
+
+
+
     console.log("Submitting file to IPFS...")
     console.log(ipfs)
     try{
+      let patient = await this.state.smartContract.methods.patientmapping(owner).call();
+      let pubKey = patient[2];
+      let encrypt = new JSEncrypt();
+      encrypt.setPublicKey(pubKey);
+
+      let encrypted = encrypt.encrypt(this.state.buffer);
       const added = await ipfs.add(this.state.buffer)
       await this.state.smartContract.methods.addRecord(added.path, filename, description, owner).send({ from: this.state.account });
       console.log("Added: ", added)
@@ -119,13 +136,13 @@ class App extends Component {
     }
   }
 
+  
   render() {
 
-    let content
     if(this.state.isPatient) {
-      content = <div><Dashboard account={this.state.account} patient = {this.state.patient} filemapping = {this.state.filemapping}/ ></div>
+      this.state.content = <div><Dashboard account={this.state.account} patient = {this.state.patient} yourfiles = {this.state.yourfiles}/ ></div>
     } else {
-      content = <div><Register addUser={this.addUser} / ></div>
+      this.state.content = <div><Register addUser={this.addUser} / ></div>
     }
 
     return (
@@ -133,26 +150,15 @@ class App extends Component {
         <div className="App">
           <div><Navbar account={this.state.account} connect={this.connect}/ ></div>
           <div className='metamaskConnection'>
-            { content }
+             { this.state.content }
           </div>
           
 
-          <ul className="App-header">
-            <li>
-                <Link to="/register">Register</Link>
-              </li>
-              <li>
-                <Link to="/dashboard">Dashboard</Link>
-              </li>
-              <li>
-                <Link to="/record">Record</Link>
-              </li>
 
-            </ul>
            <Routes>
                  <Route exact path='/register' element={< Register addUser={this.addUser}/>}></Route>
                  <Route exact path='/record' element={< Record uploadFile={this.uploadFile} captureFile={this.captureFile} />}></Route>
-                 <Route exact path='/dashboard' element={< Dashboard filemapping = {this.state.filemapping} /> }></Route>
+                 <Route exact path='/dashboard' element={< Dashboard yourfiles = {this.state.yourfiles} /> }></Route>
           </Routes>
           </div>
        </Router>

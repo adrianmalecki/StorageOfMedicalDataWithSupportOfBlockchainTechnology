@@ -1,4 +1,5 @@
 import React, { Component }  from 'react';
+import './css/Navbar.css';
  
 class Navbar extends Component{
   render(){
@@ -13,14 +14,14 @@ class Navbar extends Component{
             console.log('click')}
 
 
-      } class="btn btn-primary float-right" type="submit">Connect wallet</button>
+      } className="btn btn-primary float-right" type="submit">Connect wallet</button>
     }
 
 
       return(
-        <nav class="navbar bg-dark">
-          <a class="navbar-brand float-right" href="/">Nazwa strony</a>
-          <div class="nav navbar-right float-right">
+        <nav className="navbar bg-dark">
+          <a className="navbar-brand float-right" href="/">Electronic health records</a>
+          <div className="nav navbar-right float-right">
             { content }
           </div>
         </nav>

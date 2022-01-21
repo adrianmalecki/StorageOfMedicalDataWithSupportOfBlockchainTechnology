@@ -5,10 +5,9 @@ class Dashboard extends Component{
   render(){
       return(
       <div className="container">
-        <h2>Dashboard: {this.props.account}</h2>
+        <h2>Your dashboard</h2>
           <h4>First name: {this.props.patient[0]}</h4>
           <h4>Last name: {this.props.patient[1]}</h4>
-          <h10>Public key: {this.props.patient[2]}</h10>
           <h4>Your medical data:</h4>
 
           <table className="table-sm table-bordered text-monospace" >
@@ -22,29 +21,28 @@ class Dashboard extends Component{
                     <th scope="col" >Date</th>
                   </tr>
                 </thead>
-                { this.props.filemapping.map((filemapping, key) => {
+                { this.props.yourfiles.map((yourfiles, key) => {
                   return(
                     <thead style={{ 'fontSize': '12px' }} key={key}>
                       <tr>
                         <td>
                           <a
-                            href={"https://ipfs.infura.io/ipfs/" + filemapping.hash}
+                            href={"https://ipfs.infura.io/ipfs/" + yourfiles.hash}
                             rel="noopener noreferrer"
                             target="_blank">
-                            {filemapping.hash.substring(0,10)}...
+                            {yourfiles.hash.substring(0,10)}...
                           </a>
                         </td>
-                        <td>{filemapping.name}</td>
-                        <td>{filemapping.description}</td>
-                        <td>{filemapping.uploader}</td>
-                        <td>{filemapping.owner}</td>
-                        <td>{moment.unix(filemapping.date).format('h:mm:ss A M/D/Y')}</td>
+                        <td>{yourfiles.name}</td>
+                        <td>{yourfiles.description}</td>
+                        <td>{yourfiles.uploader}</td>
+                        <td>{yourfiles.owner}</td>
+                        <td>{moment.unix(yourfiles.date).format('h:mm:ss A M/D/Y')}</td>
                       </tr>
                     </thead>
                   )
                 })}
               </table>
-
         </div>
     )
   }

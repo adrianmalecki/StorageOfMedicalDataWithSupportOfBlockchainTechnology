@@ -1,14 +1,15 @@
 import React, { Component }  from 'react';
+import './css/Register.css';
  
 class Register extends Component{
 	render(){
 	    return(
 			<div className="container">
 				<h2>Create new account</h2>
+				<div className="form">
 				<form onSubmit={(event) => {
 					event.preventDefault()
 					this.props.addUser(this.fn.value, this.ln.value, this.pubKey.value)
-					console.log('submit')
 				}}>
 
 					<div className="form-group">
@@ -33,11 +34,13 @@ class Register extends Component{
 					</div>	
 
 					<div className="form-group">        
-						<div className="col-sm-offset-2 col-sm-10">
-							<button type="submit" id="btnsubmit" className="btn btn-default">Submit</button>
+						<div className="col-sm-offset-2 col-sm-10 ">
+							<button type="submit mx-auto" id="btnsubmit" className="btn btn-primary">Submit</button>
 						</div>
 					</div>
 				</form>
+				</div>
+
 			</div>
 		)
 	}
