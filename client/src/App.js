@@ -13,16 +13,14 @@ import './App.css';
 import { create } from "ipfs-http-client";
 const ipfs = create('https://ipfs.infura.io:5001/api/v0');
 
+const crypto = require("crypto");
+const Algorithm = "aes-128-ecb";
  
 class App extends Component {
 
   connect = async() => {
-    const metamaskInstalled = typeof window.web3 !== 'undefined'
-    this.setState({ metamaskInstalled })
-    if(metamaskInstalled) {
-      await this.loadWeb3()
-      await this.loadBlockchainData()
-    }
+    await this.loadWeb3()
+    await this.loadBlockchainData()
   }
 
   async loadWeb3() {
@@ -117,18 +115,31 @@ class App extends Component {
 
   uploadFile = async (owner, filename, description) => {
 
-
+   
 
     console.log("Submitting file to IPFS...")
     console.log(ipfs)
     try{
       let patient = await this.state.smartContract.methods.patientmapping(owner).call();
       let pubKey = patient[2];
-      let encrypt = new JSEncrypt();
-      encrypt.setPublicKey(pubKey);
 
-      let encrypted = encrypt.encrypt(this.state.buffer);
-      const added = await ipfs.add(this.state.buffer)
+      const key = Buffer.from(crypto.randomBytes(16), "utf8");
+      console.log('key: ',key)
+
+      const cipher = crypto.createCipheriv(Algorithm, key, Buffer.alloc(0));
+      const encryptedFile = Buffer.concat([cipher.update(this.state.buffer) , cipher.final()]);
+
+      //const buffer = Buffer.from(key, 'utf8')
+      //const encrypted = crypto.publicEncrypt(pubKey, buffer)
+///////////////////
+      const inputData = encryptedFile;
+      const cipher2 = crypto.createDecipheriv(Algorithm, key, Buffer.alloc(0));
+      const output = Buffer.concat([cipher2.update(inputData) , cipher2.final()]);
+      console.log(output);
+      const added2 = await ipfs.add(output)
+      console.log("Added2: ", added2)
+////////////////////////////////
+      const added = await ipfs.add(encryptedFile)
       await this.state.smartContract.methods.addRecord(added.path, filename, description, owner).send({ from: this.state.account });
       console.log("Added: ", added)
     }catch(error){
