@@ -11,14 +11,22 @@ contract SmartContract {
     	string lastname,
     	string pubKey
     );
+
     event recordAdded(
-    	uint fileCounter, 
+    	uint yourFilesCounter, 
     	string hash, 
     	string name,
     	string description,
     	uint time,
     	address owner,
     	address uploader
+    );
+
+    event recordShared(
+    	string hash, 
+    	uint time,
+    	address owner,
+    	address provider
     );
 
 	
@@ -74,7 +82,9 @@ contract SmartContract {
 	    string lastname;
 	    string pubKey;
         mapping (uint => File) yourfiles;
-        uint fileCounter;
+        mapping (uint => SharedFile) sharedWithYou;
+        uint yourFilesCounter;
+        uint sharedWithYouCounter;
 	}
 	
 	mapping (address => bool) public isPatient;
@@ -86,11 +96,35 @@ contract SmartContract {
 	    patientmapping[_patientaddress].firstname = _firstname;
 	    patientmapping[_patientaddress].lastname = _lastname;
 	    patientmapping[_patientaddress].pubKey = _pubKey;
-        patientmapping[_patientaddress].fileCounter = 0;
+        patientmapping[_patientaddress].yourFilesCounter = 0;
+        patientmapping[_patientaddress].sharedWithYouCounter = 0;
 	    patientAdd.push(_patientaddress);
 	            
 	    emit patientAdded(_patientaddress, _firstname, _lastname, _pubKey);
 	}
+
+	mapping (address => bool) canView;
+
+
+	struct SharedFile {
+	    string hash;
+	    string name;
+	    string description;
+	    uint date;
+	    address owner;
+	    string key;
+	}
+
+
+	function share(uint id, string memory hash, string memory name, string memory description, address provider, string memory key) public{
+		require(msg.sender == filemapping[id].owner);
+
+        uint counter = patientmapping[provider].sharedWithYouCounter;
+		patientmapping[provider].sharedWithYouCounter = counter + 1;
+        patientmapping[provider].sharedWithYou[counter] = SharedFile(hash, name, description, block.timestamp, msg.sender, key);
+        
+        emit recordShared(hash, block.timestamp, msg.sender, provider);
+    }
 
 	struct File {
 	    uint id;
@@ -100,29 +134,37 @@ contract SmartContract {
 	    uint date;
 	    address owner;
 	    address uploader;
+	    string key;
 	}
 	
 	uint public id = 0;    
 	mapping (uint => File) public filemapping;
 	
 
-	function addRecord(string memory _hash, string memory _name, string memory _description, address _owner) public {
+	function addRecord(string memory _hash, string memory _name, string memory _description, address _owner, string memory key) public {
 		require (bytes(_hash).length > 0);
 		require (bytes(_name).length > 0);
 		require (bytes(_description).length > 0);
 		require (msg.sender!=address(0));
 		require (_owner!=address(0));
-		uint counter = patientmapping[_owner].fileCounter;
-		patientmapping[_owner].fileCounter = counter + 1;
-        patientmapping[_owner].yourfiles[counter] = File(id, _hash, _name, _description, block.timestamp, _owner, msg.sender);
+		uint counter = patientmapping[_owner].yourFilesCounter;
+		patientmapping[_owner].yourFilesCounter = counter + 1;
+
+		id = id + 1;
+        patientmapping[_owner].yourfiles[counter] = File(id, _hash, _name, _description, block.timestamp, _owner, msg.sender, key);
         
-        id = id + 1;
-		filemapping[id] = File(id, _hash, _name, _description, block.timestamp, _owner, msg.sender);
+        
+		filemapping[id] = File(id, _hash, _name, _description, block.timestamp, _owner, msg.sender, key);
 		emit recordAdded(id, _hash, _name, _description, block.timestamp, _owner, msg.sender);		
 	}
 
     function getPatientFiles(address patientAddress, uint index) public  view  returns  (File memory) {
 		File memory file = patientmapping[patientAddress].yourfiles[index];
 		return file;
+	}
+
+	function getSharedWithYouFiles(address patientAddress, uint index) public  view  returns  (SharedFile memory) {
+		SharedFile memory sharedFile = patientmapping[patientAddress].sharedWithYou[index];
+		return sharedFile;
 	}
 }
